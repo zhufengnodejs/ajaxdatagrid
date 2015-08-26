@@ -1,0 +1,21 @@
+{
+  "name": "ajax-video",
+  "version": "1.0.0",
+  "description": "desc",
+  "main": "app.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git"
+  },
+  "keywords": [
+    "key"
+  ],
+  "author": "au",
+  "license": "ISC",
+  "dependencies": {
+    "restify": "^4.0.0"
+  }
+}

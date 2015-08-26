@@ -1,0 +1,27 @@
+{
+  "name": "ajax-video",
+  "version": "0.0.0",
+  "authors": [
+    "zhangrenyang"
+  ],
+  "description": "desc",
+  "main": "main",
+  "keywords": [
+    "ajax"
+  ],
+  "license": "MIT",
+  "homepage": "home",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "public",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.5",
+    "angular": "~1.4.4",
+    "angular-route": "~1.4.4"
+  }
+}
