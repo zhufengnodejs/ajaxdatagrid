@@ -1,33 +1,43 @@
 var express = require('express');
 var Ware = require('../models').Ware;
-
+var multer = require('multer');
+var mime = require('mime');
+var path = require('path');
 var router = express.Router();
+var fs = require('fs');
+var parser = multer().single('imgSrc');
 
-router.post('/add', function (req, res) {
+router.post('/add',parser,function (req, res) {
     var _id = req.body._id;
-    if (_id) {
-        Ware.update({_id: _id}, {
-            $set: {
-                name: req.body.name,
-                price: req.body.price,
-                imgSrc: req.body.imgSrc
-            }
-        }, function (err, good) {
-            if (err) {
-                res.json(500, {msg: err});
-            } else {
-                res.json(good);
-            }
-        });
-    } else {
-        new Ware({name: req.body.name, price: req.body.price, imgSrc: req.body.imgSrc}).save(function (err, good) {
-            if (err) {
-                res.json(500, {msg: err});
-            } else {
-                res.json(good);
-            }
-        });
-    }
+    var imgInfos = req.body.imgSrc.split(',');
+    var ext = mime.extension(imgInfos[0].slice(imgInfos[0].indexOf(':')+1,imgInfos[0].indexOf(';')));
+    var imgSrc = Date.now()+'.'+ext;
+    fs.writeFile('./app/public/upload/'+imgSrc,imgInfos[1],'base64',function(){
+        if (_id) {
+            Ware.update({_id: _id}, {
+                $set: {
+                    name: req.body.name,
+                    price: req.body.price,
+                    imgSrc: '/upload/'+imgSrc
+                }
+            }, function (err, good) {
+                if (err) {
+                    res.status(500).json({msg: err});
+                } else {
+                    res.json(good);
+                }
+            });
+        } else {
+            new Ware({name: req.body.name, price: req.body.price, imgSrc: '/upload/'+imgSrc}).save(function (err, good) {
+                if (err) {
+                    res.status(500).json({msg: err});
+                } else {
+                    res.json(good);
+                }
+            });
+        }
+    });
+
 });
 
 
@@ -60,7 +70,6 @@ router.post('/batchDelete', function (req, res) {
 
 router.get('/list', function (req, res) {
     Ware.find({}, function (err, goods) {
-        console.error(goods);
         if (err) {
             res.json(500, {msg: err});
         } else {

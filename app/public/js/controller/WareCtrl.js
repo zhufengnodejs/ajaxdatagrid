@@ -1,4 +1,4 @@
-angular.module('shopApp').controller('WareCtrl', function ($rootScope, $scope, $http, $location) {
+angular.module('shopApp').controller('WareCtrl', function ($rootScope, $scope, $http, $location,fileReader) {
     $scope.keyword = '';//当前过滤关键字
     $scope.filterWares = [];//当页的数据
     $scope.pageNumber = 1;//当前的页数
@@ -37,13 +37,16 @@ angular.module('shopApp').controller('WareCtrl', function ($rootScope, $scope, $
         }
     }
 
+    $scope.getFile = function () {
+        fileReader.readAsDataUrl($scope.file, $scope)
+            .then(function (result) {
+                $scope.ware.imgSrc = result;
+            });
+    };
+
     $scope.save = function () {
-        console.log($scope.ware);
-        $http({
-            url: '/wares/add',
-            method: 'POST',
-            data: $scope.ware
-        }).success(function (ware) {
+        var promise = postMultipart('/wares/add', $scope.ware);
+        promise.success(function (ware) {
             if (!$scope.ware._id)
                 $scope.wares.push(ware);
             else {
@@ -56,6 +59,21 @@ angular.module('shopApp').controller('WareCtrl', function ($rootScope, $scope, $
         }).error(function () {
 
         });
+    }
+
+    function postMultipart(url, data) {
+        var fd = new FormData();
+        angular.forEach(data, function(val, key) {
+            fd.append(key, val);
+        });
+        var options = {
+            method: 'POST',
+            url: url,
+            data: fd,
+            headers: {'Content-Type': undefined},
+            transformRequest: angular.identity
+        };
+        return $http(options);
     }
 
     $scope.delete = function () {
@@ -194,15 +212,6 @@ angular.module('shopApp').directive('fileModel', ['$parse', function ($parse) {
         }
     };
 }]);
-
-angular.module('shopApp').controller('UploaderController', function ($scope, fileReader) {
-    $scope.getFile = function () {
-        fileReader.readAsDataUrl($scope.file, $scope)
-            .then(function (result) {
-                $scope.imageSrc = result;
-            });
-    };
-})
 
 angular.module('shopApp').factory('fileReader', ["$q", "$log", function ($q, $log) {
         var onLoad = function (reader, deferred, scope) {

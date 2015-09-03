@@ -45,19 +45,17 @@ app.use(function(req, res, next) {
 if (app.get('env') === 'development') {
     app.use(function(err, req, res, next) {
         res.status(err.status || 500);
-        res.render('error', {
-            message: err.message,
-            error: err
-        });
+        throw err;
     });
 }
 
 app.use(function(err, req, res, next) {
     res.status(err.status || 500);
-    res.render('error', {
-        message: err.message,
-        error: {}
-    });
+    throw err;
+});
+
+process.on('unCaughtException',function(){
+    console.log(arguments);
 });
 
 app.listen(8080);
