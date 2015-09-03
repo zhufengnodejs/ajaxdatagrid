@@ -1,0 +1,9 @@
+angular.module('shopApp',['ngRoute'])
+    .config(function($routeProvider,$locationProvider){
+        $routeProvider.when('/',{
+            templateUrl:'pages/ware/admin/list.html',
+            controller:'WareCtrl'
+        }).otherwise({
+            redirectTo:'/'
+        });
+    })

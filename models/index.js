@@ -1,0 +1,1 @@
+exports.Ware = require('./ware');

@@ -8,6 +8,11 @@
 ##angular
 ##node.js
 ##gulp
+##karma-coverage
+##git
+##Protractor
+##Jasmine
+
 
 #初始化项目
 1. 初始化bower
@@ -18,7 +23,10 @@
 ```bower install bootstrap```
 ```bower install angular```
 ```bower install angular-route```
-3. 初始化npm
+4. 初始化npm
 ```npm init```
+5. 安装restify
+```npm install restify```
+
 
 
