@@ -2,16 +2,15 @@ var express = require('express');
 var router = express.Router();
 var User = require('../models').User;
 var crypto = require('crypto');
-
+var auth = require('../middleware/auth');
 function encrypt(content){
   return crypto.createHash('md5').update(content).digest('hex');
 }
 
 router.post('/validate',function(req,res){
-  var userId = req.session.userId;
-  console.error('userId',userId);
-  if(userId){
-    User.findOne({_id:userId},function(err,user){
+  var user = req.session.user;
+  if(user){
+    User.findOne({_id:user._id},function(err,user){
       if(err){
         res.json(401,{msg:err});
       }else{
@@ -23,12 +22,12 @@ router.post('/validate',function(req,res){
   }
 });
 
-router.post('/logout',function(req,res){
-  req.session.userId = null;
+router.post('/logout',auth.mustLogin,function(req,res){
+  req.session.user = null;
   res.json({msg:'退出成功'});
 });
 
-router.post('/reg',function(req,res){
+router.post('/reg',auth.mustNotLogin,function(req,res){
   var user = req.body;
   var md5Email = encrypt(user.email);
   var avatar = "https://secure.gravatar.com/avatar/"+md5Email+"?s=48";
@@ -42,13 +41,13 @@ router.post('/reg',function(req,res){
   });
 });
 
-router.post('/login',function(req,res){
-  User.findOne({username:req.body.username,password:encrypt(req.body.password)},{username:1},function(err,user){
+router.post('/login',auth.mustNotLogin,function(req,res){
+  User.findOne({username:req.body.username,password:encrypt(req.body.password)},function(err,user){
     if(err){
       res.status(500).json({msg:err});
     }else{
       if(user){
-        req.session.userId = user._id;
+        req.session.user = user;
         res.json(user);
       }else{
         res.status(401).json({msg:'此用户不合法'});

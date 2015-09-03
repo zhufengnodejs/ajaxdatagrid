@@ -6,21 +6,25 @@ var mime = require('mime');
 var path = require('path');
 var async = require('async');
 var router = express.Router();
+var uuid = require('uuid');
 var fs = require('fs');
+var auth = require('../middleware/auth');
 var parser = multer().single('imgSrc');
 
-router.post('/add',parser,function (req, res) {
+router.post('/add', auth.mustLogin, auth.mustAdmin, parser, function (req, res) {
     var _id = req.body._id;
-    var imgInfos = req.body.imgSrc.split(',');
-    var ext = mime.extension(imgInfos[0].slice(imgInfos[0].indexOf(':')+1,imgInfos[0].indexOf(';')));
-    var imgSrc = Date.now()+'.'+ext;
-    fs.writeFile('./app/public/upload/'+imgSrc,imgInfos[1],'base64',function(){
+    if (req.body.imgSrc) {
+        var imgInfos = req.body.imgSrc.split(',');
+        var ext = mime.extension(imgInfos[0].slice(imgInfos[0].indexOf(':') + 1, imgInfos[0].indexOf(';')));
+        var imgSrc = uuid.v4() + '.' + ext;
+    }
+    fs.writeFile('./app/public/upload/' + imgSrc, imgInfos[1], 'base64', function () {
         if (_id) {
             Ware.update({_id: _id}, {
                 $set: {
                     name: req.body.name,
                     price: req.body.price,
-                    imgSrc: '/upload/'+imgSrc
+                    imgSrc: '/upload/' + imgSrc
                 }
             }, function (err, good) {
                 if (err) {
@@ -30,7 +34,11 @@ router.post('/add',parser,function (req, res) {
                 }
             });
         } else {
-            new Ware({name: req.body.name, price: req.body.price, imgSrc: '/upload/'+imgSrc}).save(function (err, ware) {
+            new Ware({
+                name: req.body.name,
+                price: req.body.price,
+                imgSrc: '/upload/' + imgSrc
+            }).save(function (err, ware) {
                 if (err) {
                     res.status(500).json({msg: err});
                 } else {
@@ -43,7 +51,7 @@ router.post('/add',parser,function (req, res) {
 });
 
 
-router.post('/delete', function (req, res) {
+router.post('/delete', auth.mustLogin, auth.mustAdmin, function (req, res) {
     Ware.remove({_id: req.body._id}, function (err, result) {
         if (err) {
             res.json(500, {msg: err});
@@ -53,7 +61,7 @@ router.post('/delete', function (req, res) {
     });
 });
 
-router.post('/batchDelete', function (req, res) {
+router.post('/batchDelete', auth.mustLogin, auth.mustAdmin, function (req, res) {
     var _ids = req.body._ids;
     var tasks = [];
     _ids.forEach(function (_id) {
@@ -70,41 +78,40 @@ router.post('/batchDelete', function (req, res) {
     });
 });
 
-router.get('/list', function (req, res) {
+router.get('/list', auth.mustLogin, function (req, res) {
     Ware.find({}, function (err, wares) {
         if (err) {
             res.json(500, {msg: err});
         } else {
-            console.log(wares);
             res.json(wares);
         }
     });
 });
 
 
-router.post('/addCart/:wareId',function(req,res){
+router.post('/addCart/:wareId', auth.mustLogin, function (req, res) {
     var userId = req.session.userId;
     var wareId = req.params.wareId;
-    Cart.findOne({user:userId,ware:wareId},function(err,cart){
-        if(cart){
-            Cart.update({_id:cart._id},{$inc:{quantity:1}},function(err,result){
-                if(err){
-                    res.status(500).json({msg:err});
-                }else{
+    Cart.findOne({user: userId, ware: wareId}, function (err, cart) {
+        if (cart) {
+            Cart.update({_id: cart._id}, {$inc: {quantity: 1}}, function (err, result) {
+                if (err) {
+                    res.status(500).json({msg: err});
+                } else {
                     res.json(result);
                 }
             });
-        }else{
+        } else {
             new Cart({
-                user:userId,
-                ware:wareId
-            }).save(function(err,cart){
-                    if(err){
-                        res.status(500).json({msg:err});
-                    }else{
+                user: userId,
+                ware: wareId
+            }).save(function (err, cart) {
+                    if (err) {
+                        res.status(500).json({msg: err});
+                    } else {
                         res.json(cart);
                     }
-                });;
+                });
         }
     });
 

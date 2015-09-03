@@ -2,7 +2,8 @@ var express = require('express');
 var router = express.Router();
 var Cart = require('../models').Cart;
 var async = require('async');
-router.get('/list',function(req,res){
+var auth = require('../middleware/auth');
+router.get('/list',auth.mustLogin,function(req,res){
     Cart.find({}).populate("ware").exec(function(err,carts){
         console.log(carts);
         if(err){
@@ -12,7 +13,7 @@ router.get('/list',function(req,res){
         }
     });
 });
-router.post('/changeQuantity',function(req,res){
+router.post('/changeQuantity',auth.mustLogin,function(req,res){
     Cart.update({_id:req.body._id},{$set:{quantity:req.body.quantity}},function(err,result){
         if(err){
             res.status(500).json({msg:err});
@@ -24,7 +25,7 @@ router.post('/changeQuantity',function(req,res){
 
 
 //删除购物车
-router.get("/del/:_id", function(req, res) {
+router.get("/del/:_id",auth.mustLogin, function(req, res) {
     Cart.remove({"_id":req.params._id},function(error,result){
         if (error) {
             res.json(500, {msg: error});
@@ -34,7 +35,7 @@ router.get("/del/:_id", function(req, res) {
     });
 });
 
-router.post("/settle", function(req, res,next) {
+router.post("/settle",auth.mustLogin, function(req, res,next) {
     var userId = req.session.userId;
     var _ids = req.body._ids;
     var length = _ids.length;
@@ -62,7 +63,7 @@ router.post("/settle", function(req, res,next) {
 });
 
 
-router.post("/batchDelete", function(req, res,next) {
+router.post("/batchDelete",auth.mustLogin, function(req, res,next) {
     var userId = req.session.userId;
     var _ids = req.body._ids;
     var length = _ids.length;

@@ -39,7 +39,7 @@ app.use('/users', users);
 app.use('/wares', wares);
 app.use('/carts', carts);
 app.use(function(req, res, next) {
-    var err = new Error('Not Found');
+    var err = new Error(req.url+'Not Found');
     err.status = 404;
     next(err);
 });
@@ -54,10 +54,6 @@ if (app.get('env') === 'development') {
 app.use(function(err, req, res, next) {
     res.status(err.status || 500);
     throw err;
-});
-
-process.on('unCaughtException',function(){
-    console.log(arguments);
 });
 
 app.listen(8080);
