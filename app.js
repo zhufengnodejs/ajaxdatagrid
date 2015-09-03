@@ -11,6 +11,8 @@ var MongoStore = require('connect-mongo')(session);
 var routes = require('./routes/index');
 var users = require('./routes/users');
 var wares = require('./routes/wares');
+var carts = require('./routes/carts');
+
 var app = express();
 app.set('views', path.join(__dirname, 'app','public'));
 app.set('view engine', 'html');
@@ -35,7 +37,7 @@ app.use(session({
 app.use('/', routes);
 app.use('/users', users);
 app.use('/wares', wares);
-
+app.use('/carts', carts);
 app.use(function(req, res, next) {
     var err = new Error('Not Found');
     err.status = 404;

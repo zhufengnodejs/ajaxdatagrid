@@ -70,11 +70,10 @@
                     <div class="form-group">
                         <label for="imgSrc" class="col-sm-2 control-label">图片</label>
                         <div class="col-sm-5">
-                            <input type="text" class="form-control" ng-model="ware.imgSrc"/>
-                            <input type="file" class="form-control" file-model="myFile" ng-model="ware.imgSrc" id="imgSrc" placeholder="图片"/>
+                            <input type="file" class="form-control" file-model  id="imgSrc" placeholder="图片"/>
                         </div>
-                        <div class="col-sm-5">
-                            <img ng-src="{{ware.imgSrc}}" style="max-width:50px;max-height:50px;margin:0 auto;display:block;" />
+                        <div class="col-sm-5"><!-- 此为图片预览窗口 -->
+                            <img src="{{ware.imgSrc}}" id="imgPreview" style="max-width:100px;max-height:100px;margin:0 auto;display:block;" />
                         </div>
                     </div>
                 </form>

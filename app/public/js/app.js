@@ -1,9 +1,35 @@
-angular.module('shopApp',['ngRoute'])
-    .config(function($routeProvider,$locationProvider){
+angular.module('shopApp',['ngRoute']).config(function($routeProvider,$locationProvider){
         $routeProvider.when('/',{
+            templateUrl:'pages/home.html',
+            controller:'HomeCtrl'
+        }).when('/users/reg',{
+            templateUrl:'pages/user/reg.html',
+            controller:'RegCtrl'
+        }).when('/users/login',{
+            templateUrl:'pages/user/login.html',
+            controller:'LoginCtrl'
+        }).when('/wares/admin/list',{
             templateUrl:'pages/ware/admin/list.html',
             controller:'WareCtrl'
+        }).when('/wares/list',{
+            templateUrl:'pages/ware/list.html',
+            controller:'WareCtrl'
+        }).when('/carts/list',{
+            templateUrl:'pages/cart/list.html',
+            controller:'CartCtrl'
         }).otherwise({
             redirectTo:'/'
         });
     })
+//你可以把app.run函数看作是Angular应用的main方法
+angular.module('shopApp').run(function($rootScope,$location,$http){
+        $http({
+            url:'/users/validate',
+            method:'POST'
+        }).success(function(user){
+            $rootScope.me = user;
+            $location.path('/');
+        }).error(function(data){
+            $location.path('/login');
+        });
+    });

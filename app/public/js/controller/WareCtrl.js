@@ -1,4 +1,4 @@
-angular.module('shopApp').controller('WareCtrl', function ($rootScope, $scope, $http, $location,fileReader) {
+angular.module('shopApp').controller('WareCtrl', function ($rootScope, $scope, $http, $location,fileReader,dataService) {
     $scope.keyword = '';//当前过滤关键字
     $scope.filterWares = [];//当页的数据
     $scope.pageNumber = 1;//当前的页数
@@ -15,6 +15,7 @@ angular.module('shopApp').controller('WareCtrl', function ($rootScope, $scope, $
     }).error(function () {
 
     });
+
     $scope.filter = function () {
         var filterWares = $scope.wares.filter(function (ware) {
             return ware.name.indexOf($scope.keyword) != -1;
@@ -25,7 +26,7 @@ angular.module('shopApp').controller('WareCtrl', function ($rootScope, $scope, $
             $scope.pages.push(i);
         }
         filterWares = filterWares.filter(function (ware, index) {
-            return index < filterWares.length && index < $scope.pageNumber * $scope.pageSize;
+            return index>=($scope.pageNumber-1) * $scope.pageSize && index < filterWares.length && index < $scope.pageNumber * $scope.pageSize;
         });
         $scope.filterWares = filterWares;
     }
@@ -37,6 +38,7 @@ angular.module('shopApp').controller('WareCtrl', function ($rootScope, $scope, $
         }
     }
 
+    //读取scope上的file值
     $scope.getFile = function () {
         fileReader.readAsDataUrl($scope.file, $scope)
             .then(function (result) {
@@ -56,6 +58,8 @@ angular.module('shopApp').controller('WareCtrl', function ($rootScope, $scope, $
                     }
                 });
             }
+            console.log($scope.wares);
+            $scope.filter();
         }).error(function () {
 
         });
@@ -78,15 +82,23 @@ angular.module('shopApp').controller('WareCtrl', function ($rootScope, $scope, $
 
     $scope.delete = function () {
         $http({
-            url: '/delete',
+            url: '/wares/delete',
             method: 'POST',
             data: $scope.ware
         }).success(function (ware) {
-            $scope.wares = $scope.wares.filter(function (ware) {
-                return ware._id != $scope.ware._id;
+           $scope.wares  = $scope.wares.filter(function (ware) {
+                    return ware._id != $scope.ware._id;
             });
+            $scope.filter();
         }).error(function () {
 
+        });
+    }
+
+    //添加到购物车
+    $scope.addCart = function(wareId){
+        dataService.post('/wares/addCart/'+wareId,function(){
+            $('#addCartDoneDialog').modal(true);
         });
     }
 });
@@ -96,6 +108,9 @@ angular.module('shopApp').directive('addWares', function () {
     return {
         link: function (scope, element, attrs) {
             element.click(function () {
+                $('#imgSrc').val('');
+                $('#imgPreview').prop('src','');
+
                 scope.$apply(function () {
                     scope.ware = {};
                 });
@@ -170,7 +185,7 @@ angular.module('shopApp').directive('selectWareItem', function () {
     }
 })
 
-angular.module('shopApp').directive('batchDeleteWares', function () {
+angular.module('shopApp').directive('batchDeleteWares', function ($http) {
     return {
         link: function (scope, element, attrs) {
             element.click(function () {
@@ -180,13 +195,14 @@ angular.module('shopApp').directive('batchDeleteWares', function () {
                     _ids.push($(ware).attr('data-id'));
                 });
                 $http({
-                    url: '/batchDelete',
+                    url: '/wares/batchDelete',
                     method: 'POST',
                     data: {_ids: _ids}
                 }).success(function (ware) {
                     scope.wares = scope.wares.filter(function (ware) {
                         return _ids.indexOf(ware._id) == -1;
                     });
+                    scope.filter();
                 }).error(function () {
 
                 });
@@ -194,26 +210,22 @@ angular.module('shopApp').directive('batchDeleteWares', function () {
         }
     }
 })
-
+//上传文件指令
 angular.module('shopApp').directive('fileModel', ['$parse', function ($parse) {
     return {
-        restrict: 'A',
+        restrict: 'A',//只限定Attribute使用
         link: function (scope, element, attrs, ngModel) {
-            var model = $parse(attrs.fileModel);
-            var modelSetter = model.assign;
             element.bind('change', function (event) {
-                scope.$apply(function () {
-                    modelSetter(scope, element[0].files[0]);
-                });
-                //附件预览
-                scope.file = (event.srcElement || event.target).files[0];
+                scope.file = element[0].files[0];
                 scope.getFile();
             });
         }
     };
 }]);
 
-angular.module('shopApp').factory('fileReader', ["$q", "$log", function ($q, $log) {
+//创建fileReader的服务
+angular.module('shopApp').factory('fileReader', ["$q", function ($q) {
+        //读取成功后触发
         var onLoad = function (reader, deferred, scope) {
             return function () {
                 scope.$apply(function () {
@@ -221,6 +233,8 @@ angular.module('shopApp').factory('fileReader', ["$q", "$log", function ($q, $lo
                 });
             };
         };
+
+        //失败后触发
         var onError = function (reader, deferred, scope) {
             return function () {
                 scope.$apply(function () {
@@ -228,15 +242,19 @@ angular.module('shopApp').factory('fileReader', ["$q", "$log", function ($q, $lo
                 });
             };
         };
+
+        //获取文件读取器
         var getReader = function (deferred, scope) {
             var reader = new FileReader();
             reader.onload = onLoad(reader, deferred, scope);
             reader.onerror = onError(reader, deferred, scope);
             return reader;
         };
+        //读取为dataurl
         var readAsDataURL = function (file, scope) {
             var deferred = $q.defer();
             var reader = getReader(deferred, scope);
+            //readAsDataURL：这是例子程序中用到的方法，该方法将文件读取为一段以 data: 开头的字符串，这段字符串的实质就是 Data URL，Data URL是一种将小文件直接嵌入文档的方案。这里的小文件通常是指图像与 html 等格式的文件。
             reader.readAsDataURL(file);
             return deferred.promise;
         };

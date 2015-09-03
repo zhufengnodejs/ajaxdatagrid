@@ -1,8 +1,10 @@
 var express = require('express');
 var Ware = require('../models').Ware;
+var Cart = require('../models').Cart;
 var multer = require('multer');
 var mime = require('mime');
 var path = require('path');
+var async = require('async');
 var router = express.Router();
 var fs = require('fs');
 var parser = multer().single('imgSrc');
@@ -24,15 +26,15 @@ router.post('/add',parser,function (req, res) {
                 if (err) {
                     res.status(500).json({msg: err});
                 } else {
-                    res.json(good);
+                    res.json(ware);
                 }
             });
         } else {
-            new Ware({name: req.body.name, price: req.body.price, imgSrc: '/upload/'+imgSrc}).save(function (err, good) {
+            new Ware({name: req.body.name, price: req.body.price, imgSrc: '/upload/'+imgSrc}).save(function (err, ware) {
                 if (err) {
                     res.status(500).json({msg: err});
                 } else {
-                    res.json(good);
+                    res.json(ware);
                 }
             });
         }
@@ -56,7 +58,7 @@ router.post('/batchDelete', function (req, res) {
     var tasks = [];
     _ids.forEach(function (_id) {
         tasks.push(function (callback) {
-            models.Goods.remove({_id: _id}, callback);
+            Ware.remove({_id: _id}, callback);
         });
     });
     async.parallel(tasks, function (err, result) {
@@ -69,15 +71,43 @@ router.post('/batchDelete', function (req, res) {
 });
 
 router.get('/list', function (req, res) {
-    Ware.find({}, function (err, goods) {
+    Ware.find({}, function (err, wares) {
         if (err) {
             res.json(500, {msg: err});
         } else {
-            console.log(goods);
-            res.json(goods);
+            console.log(wares);
+            res.json(wares);
         }
     });
 });
 
+
+router.post('/addCart/:wareId',function(req,res){
+    var userId = req.session.userId;
+    var wareId = req.params.wareId;
+    Cart.findOne({user:userId,ware:wareId},function(err,cart){
+        if(cart){
+            Cart.update({_id:cart._id},{$inc:{quantity:1}},function(err,result){
+                if(err){
+                    res.status(500).json({msg:err});
+                }else{
+                    res.json(result);
+                }
+            });
+        }else{
+            new Cart({
+                user:userId,
+                ware:wareId
+            }).save(function(err,cart){
+                    if(err){
+                        res.status(500).json({msg:err});
+                    }else{
+                        res.json(cart);
+                    }
+                });;
+        }
+    });
+
+});
 
 module.exports = router;
