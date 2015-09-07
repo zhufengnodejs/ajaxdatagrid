@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html ng-app="shopApp">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <!-- bower:css -->
+    <!-- endbower -->
+
+    <!-- build:css({.tmp/serve,app}) styles/app.css -->
+    <!-- inject:css -->
+    <link rel="stylesheet" href="app/index.css">
+    <!-- endinject -->
+    <!-- endbuild -->
+</head>
+<body>
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation" ng-controller="NavBarCtrl">
+    <div class="navbar-header">
+        <a href="#/" class="navbar-brand">珠峰商城</a>
+    </div>
+    <ul class="nav navbar-nav">
+        <li ng-show="me" ng-class="{active:isActive('/home')}"><a href="#/home">首页</a></li>
+        <li ng-hide="me" ng-class="{active:isActive('/users/reg')}"><a href="#/users/reg">注册</a></li>
+        <li ng-hide="me" ng-class="{active:isActive('/user/login')}"><a href="#/users/login">登录</a></li>
+        <li ng-show="me" ng-class="{active:isActive('/wares/list')}"><a href="#/wares/list">浏览商品</a></li>
+        <li ng-show="me" ng-class="{active:isActive('/wares/admin/list')}"><a href="#/wares/admin/list">商品管理</a></li>
+        <li ng-show="me" ng-class="{active:isActive('/carts/list')}"><a href="#/carts/list">购物车</a></li>
+    </ul>
+    <ul class="nav-navbar-nav navbar-right" ng-show="me" style="list-style-type: none">
+        <li class="dropdown">
+            <a href="#" style="padding-right: 25px" class="dropdown-toggle" data-toggle="dropdown" role="button"><img style="width:15px; :15px" ng-src="{{me.avatar}}" alt="{{me.username}}"/> {{me.username}}<span class="caret"></span></a>
+            <ul class="dropdown-menu dropdown-menu-left">
+                <li><a href="#" ng-click="logout()">退出</a></li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+<div ng-view></div>
+</body>
+<!-- build:js({.tmp/serve,app/public}) scripts/vendor.js -->
+<!-- bower:js -->
+<script src="lib/jquery/dist/jquery.js"></script>
+<script src="lib/bootstrap/dist/js/bootstrap.js"></script>
+<script src="lib/angular/angular.js"></script>
+<script src="lib/angular-route/angular-route.js"></script>
+<!-- endbower -->
+<!-- endbuild -->
+
+<!-- build:js({.tmp/serve,app}) scripts/app.js -->
+<!-- inject:js -->
+<script src="public/js/app.js"></script>
+<script src="public/js/service/DataService.js"></script>
+<script src="public/js/directive/selectItem.js"></script>
+<script src="public/js/directive/selectAllCart.js"></script>
+<script src="public/js/controller/WareCtrl.js"></script>
+<script src="public/js/controller/RegCtrl.js"></script>
+<script src="public/js/controller/NavBarCtrl.js"></script>
+<script src="public/js/controller/LoginCtrl.js"></script>
+<script src="public/js/controller/HomeCtrl.js"></script>
+<script src="public/js/controller/CartCtrl.js"></script>
+<!-- endinject -->
+
+<!-- inject:partials -->
+<!-- angular templates will be automatically converted in js and inserted here -->
+<!-- endinject -->
+<!-- endbuild -->
+</html>

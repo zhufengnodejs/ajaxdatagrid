@@ -1,4 +1,5 @@
-if(false){
-    //var a = 1;
+function sohu() {
+    return 1;
 }
-console.log(a);
+sohu;
+console.log(typeof sohu);

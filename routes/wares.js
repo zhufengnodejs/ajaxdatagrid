@@ -12,13 +12,16 @@ var auth = require('../middleware/auth');
 var parser = multer().single('imgSrc');
 
 router.post('/add', auth.mustLogin, auth.mustAdmin, parser, function (req, res) {
+
     var _id = req.body._id;
     if (req.body.imgSrc) {
         var imgInfos = req.body.imgSrc.split(',');
         var ext = mime.extension(imgInfos[0].slice(imgInfos[0].indexOf(':') + 1, imgInfos[0].indexOf(';')));
         var imgSrc = uuid.v4() + '.' + ext;
     }
-    fs.writeFile('./app/public/upload/' + imgSrc, imgInfos[1], 'base64', function () {
+    console.log('./app/public/upload/' + imgSrc);
+    fs.writeFile('./app/public/upload/' + imgSrc, imgInfos[1], 'base64', function (err,result) {
+        console.error(err);
         if (_id) {
             Ware.update({_id: _id}, {
                 $set: {
