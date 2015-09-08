@@ -1,5 +1,9 @@
-function sohu() {
-    return 1;
+var obj = {
+    key1:'value1',
+    key2:'value2',
+    key3:'value3'
 }
-sohu;
-console.log(typeof sohu);
+var keys = Object.keys(obj);
+keys.forEach(function(key){
+    console.log(obj[key]);
+});

@@ -11,12 +11,22 @@ function listFiles() {
         dependencies: true,//生产依赖
         devDependencies: true//开发依赖
     });
-    return wiredep(wiredepOptions).js
-        .concat([
+    var js = wiredep(wiredepOptions).js;
+    return js.concat([
+        path.join(conf.paths.src, '/public/js/app.js'),
+        path.join(conf.paths.src, '/public/js/controller/HomeCtrl.js'),
+        path.join(conf.paths.src, '/public/js/controller/HomeCtrl.spec.js')
+    ]);
+    /*return [
+            path.join(conf.paths.src, '/public/lib/jquery/dist/jquery.js'),
+            path.join(conf.paths.src, '/public/lib/bootstrap/dist/js/bootstrap.js'),
+            path.join(conf.paths.src, '/public/lib/angular/angular.js'),
+            path.join(conf.paths.src, '/public/lib/angular-mocks/angular-mocks.js'),
+            path.join(conf.paths.src, '/public/lib/angular-route/angular-route.js'),
             path.join(conf.paths.src, '/public/js/app.js'),
-            path.join(conf.paths.src, '/public/js/**/*.js'),
-            path.join(conf.paths.src, '/public/**/*.spec.js')
-        ]);
+            path.join(conf.paths.src, '/public/js/controller/HomeCtrl.js'),
+            path.join(conf.paths.src, '/public/js/controller/HomeCtrl.spec.js')
+        ];*/
 }
 
 module.exports = function(config) {

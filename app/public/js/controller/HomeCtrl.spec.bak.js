@@ -1,8 +1,7 @@
 //http://www.jb51.net/article/58230.htm
 //http://blog.jobbole.com/54936/
-
 (function() {
-    describe('HomeCtrl', function(){
+    describe('controllers', function(){
         var $scope ;
         beforeEach(module('shopApp'));
         beforeEach(inject(function($rootScope, $controller) {
@@ -95,7 +94,7 @@
         it('should fetch list of users', function(){
             $httpBackend.flush();
             expect(scope.users.length).toBe(2);
-           expect(scope.users[0].name).toBe('Bob');
+            expect(scope.users[0].name).toBe('Bob');
         });
     });
 

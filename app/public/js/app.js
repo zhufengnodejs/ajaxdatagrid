@@ -1,4 +1,4 @@
-angular.module('shopApp',['ngRoute']).config(function($routeProvider,$locationProvider){
+angular.module('shopApp',['ngRoute','ngResource']).config(function($routeProvider,$locationProvider){
         $routeProvider.when('/',{
             templateUrl:'pages/home.html',
             controller:'HomeCtrl'
