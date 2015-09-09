@@ -36,27 +36,30 @@
 </nav>
 <div ng-view></div>
 </body>
-<!-- build:js({.tmp/serve,app/public}) scripts/vendor.js -->
+<!-- build:js({.tmp/serve,app/}) scripts/vendor.js -->
 <!-- bower:js -->
 <script src="lib/jquery/dist/jquery.js"></script>
-<script src="lib/bootstrap/dist/js/bootstrap.js"></script>
 <script src="lib/angular/angular.js"></script>
+<script src="lib/angular-mocks/angular-mocks.js"></script>
+<script src="lib/angular-resource/angular-resource.js"></script>
 <script src="lib/angular-route/angular-route.js"></script>
+<script src="lib/bootstrap/dist/js/bootstrap.js"></script>
 <!-- endbower -->
 <!-- endbuild -->
 
 <!-- build:js({.tmp/serve,app}) scripts/app.js -->
 <!-- inject:js -->
-<script src="public/js/app.js"></script>
-<script src="public/js/service/DataService.js"></script>
-<script src="public/js/directive/selectItem.js"></script>
-<script src="public/js/directive/selectAllCart.js"></script>
-<script src="public/js/controller/WareCtrl.js"></script>
-<script src="public/js/controller/RegCtrl.js"></script>
-<script src="public/js/controller/NavBarCtrl.js"></script>
-<script src="public/js/controller/LoginCtrl.js"></script>
-<script src="public/js/controller/HomeCtrl.js"></script>
-<script src="public/js/controller/CartCtrl.js"></script>
+<script src="/js/app.js"></script>
+<script src="/js/service/DataService.js"></script>
+<script src="/js/directive/selectItem.js"></script>
+<script src="/js/directive/selectAllCart.js"></script>
+<script src="/js/controller/WareCtrl.js"></script>
+<script src="/js/controller/RegCtrl.js"></script>
+<script src="/js/controller/NavBarCtrl.js"></script>
+<script src="/js/controller/LoginCtrl.js"></script>
+<script src="/js/controller/HomeCtrl.spec.bak.js"></script>
+<script src="/js/controller/HomeCtrl.js"></script>
+<script src="/js/controller/CartCtrl.js"></script>
 <!-- endinject -->
 
 <!-- inject:partials -->
