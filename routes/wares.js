@@ -19,7 +19,6 @@ router.post('/add', auth.mustLogin, auth.mustAdmin, parser, function (req, res) 
         var ext = mime.extension(imgInfos[0].slice(imgInfos[0].indexOf(':') + 1, imgInfos[0].indexOf(';')));
         var imgSrc = uuid.v4() + '.' + ext;
     }
-    console.log('./app/public/upload/' + imgSrc);
     fs.writeFile('./app/public/upload/' + imgSrc, imgInfos[1], 'base64', function (err,result) {
         console.error(err);
         if (_id) {

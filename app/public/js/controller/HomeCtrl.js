@@ -2,7 +2,7 @@ angular.module('shopApp').controller('HomeCtrl',function($scope,UserFactory){
     $scope.title = "欢迎光临珠峰网上商城";
     $scope.users = UserFactory.query();
 });
-//$resource 封闭了http,适合restful
+//$resource 封装了http,适合restful
 angular.module('shopApp').factory('UserFactory', function($resource){
     return $resource('Users/users.json')
 });

@@ -29,6 +29,7 @@ router.post('/logout',auth.mustLogin,function(req,res){
 
 router.post('/reg',auth.mustNotLogin,function(req,res){
   var user = req.body;
+  console.log(user);
   var md5Email = encrypt(user.email);
   var avatar = "https://secure.gravatar.com/avatar/"+md5Email+"?s=48";
   new User({username:user.username,password:encrypt(user.password),email:user.email,avatar:avatar}).save(function(err,resultUser){
